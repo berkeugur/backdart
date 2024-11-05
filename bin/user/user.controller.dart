@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
+import 'package:backdart/extensions/param_extension.dart';
 
 class UserController extends Controller {
   @Get('/hello')
@@ -16,56 +17,56 @@ class UserController extends Controller {
 
   @Get('/user/:id')
   @ApiSummary("User bilgilerini getirmek için endpoint")
-  HttpResponse getUserById(HttpRequest request, Map<String, String> params) {
+  HttpResponse getUserById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${params['id']}')
+      ..write('merhaba dünya ${request.params['id']}')
       ..close();
     return request.response;
   }
 
   @Get('/user/:id/:name')
-  HttpResponse getUsersById(HttpRequest request, Map<String, String> params) {
+  HttpResponse getUsersById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${params['id']} ${params['name']}')
+      ..write('merhaba dünya ${request.params['id']} ${request.params['name']}')
       ..close();
     return request.response;
   }
 
   @Get('/user/:id/profile/:name')
-  HttpResponse getUxsersById(HttpRequest request, Map<String, String> params) {
+  HttpResponse getUxsersById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${params['id']} ${params['name']}')
+      ..write('merhaba dünya ${request.params['id']} ${request.params['name']}')
       ..close();
     return request.response;
   }
 
   @Post('/user')
-  HttpResponse postUserById(HttpRequest request, Map<String, String> params) {
+  HttpResponse postUserById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${params['id']}')
+      ..write('merhaba dünya ${request.params['id']}')
       ..close();
     return request.response;
   }
 
   @Get('/user')
-  HttpResponse posUserById(HttpRequest request, Map<String, String> params) {
+  HttpResponse posUserById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${params['id']}')
+      ..write('merhaba dünya ${request.params['id']}')
       ..close();
     return request.response;
   }
 
   @Delete('/user')
   @ApiSummary("silme- endpointisidr")
-  HttpResponse posUsdadsaserById(HttpRequest request, Map<String, String> params) {
+  HttpResponse posUsdadsaserById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${params['id']}')
+      ..write('merhaba dünya ${request.params['id']}')
       ..close();
     return request.response;
   }

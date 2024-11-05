@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
+import 'package:backdart/extensions/param_extension.dart';
 import 'package:backdart/router.dart';
 
 class ApiController extends Controller {
@@ -14,8 +15,9 @@ class ApiController extends Controller {
   }
 
   @Get("/swagger/:filename")
-  Future<HttpResponse> getSwaggerAssets(HttpRequest request, Map<String, String> params) async {
-    final filePath = 'lib/public/swagger/${params['filename']}';
+  Future<HttpResponse> getSwaggerAssets(HttpRequest request) async {
+    final filePath = 'lib/public/swagger/${request.params['filename']}';
+    print(filePath);
     return await _serveFile(request, filePath);
   }
 

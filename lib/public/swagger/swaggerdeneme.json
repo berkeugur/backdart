@@ -1,1 +1,194 @@
-{"swagger":"2.0","info":null,"host":"","basePath":"","tags":[],"schemes":["http","https"],"paths":{"/hello":{"get":{"tags":["hello"],"summary":"Hello World Summary","description":"Hello World Description","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[],"responses":{},"security":[],"deprecated":null}},"/user/{id}":{"get":{"tags":["user"],"summary":"User bilgilerini getirmek için endpoint","description":"","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[{"name":"id","in":"path","required":true,"type":"string"}],"responses":{},"security":[],"deprecated":null}},"/user/{id}/{name}":{"get":{"tags":["user"],"summary":"","description":"","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[{"name":"id","in":"path","required":true,"type":"string"},{"name":"name","in":"path","required":true,"type":"string"}],"responses":{},"security":[],"deprecated":null}},"/user/{id}/profile/{name}":{"get":{"tags":["user"],"summary":"","description":"","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[{"name":"id","in":"path","required":true,"type":"string"},{"name":"name","in":"path","required":true,"type":"string"}],"responses":{},"security":[],"deprecated":null}},"/user":{"get":{"tags":["user"],"summary":"silme- endpointisidr","description":"","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[],"responses":{},"security":[],"deprecated":null},"post":{"tags":["user"],"summary":"silme- endpointisidr","description":"","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[],"responses":{},"security":[],"deprecated":null},"delete":{"tags":["user"],"summary":"silme- endpointisidr","description":"","operationId":"","consumes":["multipart/form-data"],"produces":["application/json"],"parameters":[],"responses":{},"security":[],"deprecated":null}}},"securityDefinitions":{"api_key":{"type":"","name":"","in":""}},"definitions":{},"externalDocs":{"description":"","url":""}}
+{
+    "swagger": "2.0",
+    "info": null,
+    "host": "",
+    "basePath": "",
+    "tags": [],
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "paths": {
+        "/hello": {
+            "get": {
+                "tags": [
+                    "hello"
+                ],
+                "summary": "Hello World Summary",
+                "description": "Hello World Description",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            }
+        },
+        "/user/{id}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "User bilgilerini getirmek için endpoint",
+                "description": "",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            }
+        },
+        "/user/{id}/{name}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            }
+        },
+        "/user/{id}/profile/{name}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            },
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "",
+                "description": "",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            },
+            "delete": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "silme- endpointisidr",
+                "description": "",
+                "operationId": "",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {},
+                "security": [],
+                "deprecated": null
+            }
+        }
+    },
+    "securityDefinitions": {
+        "api_key": {
+            "type": "",
+            "name": "",
+            "in": ""
+        }
+    },
+    "definitions": {},
+    "externalDocs": {
+        "description": "",
+        "url": ""
+    }
+}

@@ -2,16 +2,36 @@ import 'dart:mirrors';
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
+import 'package:backdart/extensions/param_extension.dart';
 import 'package:backdart/http_methods.dart';
 import 'package:backdart/swagger/swagger_options.dart';
 import 'package:backdart/typedef.dart';
 
+class PathWithMethod {
+  final String path;
+  final HttpMethods method;
+
+  PathWithMethod(
+    this.path,
+    this.method,
+  );
+
+  PathWithMethod copyWith({
+    String? path,
+    HttpMethods? method,
+  }) =>
+      PathWithMethod(
+        path ?? this.path,
+        method ?? this.method,
+      );
+}
+
 class Router {
   final Routes _routes = {};
-  final Map<String, SwaggerSettings> swaggerSetting = {};
+  final Map<PathWithMethod, SwaggerSettings> swaggerSetting = <PathWithMethod, SwaggerSettings>{};
 
-  void addSwaggerSetting(String path, SwaggerSettings settings) {
-    swaggerSetting[convertPathParamsToSwaggerParams(path)] = settings;
+  void addSwaggerSetting(PathWithMethod pathWithMethod, SwaggerSettings settings) {
+    swaggerSetting[PathWithMethod(convertPathParamsToSwaggerParams(pathWithMethod.path), pathWithMethod.method)] = settings;
   }
 
   void addRoute(HttpMethods method, String path, RouteHandler handler) {
@@ -30,7 +50,7 @@ class Router {
       if (params.isEmpty) {
         handler.function(request);
       } else {
-        handler.function(request, params);
+        handler.function(request);
       }
     } else {
       request.response
@@ -77,8 +97,9 @@ class Router {
       if (declaration.metadata.isNotEmpty) {
         for (var metadata in declaration.metadata) {
           final reflectee = metadata.reflectee;
-          handler(HttpRequest request, [Map<String, String>? params]) {
-            return instanceMirror.invoke(declaration.simpleName, [request, if (params != null) params]).reflectee;
+          handler(HttpRequest request) {
+            request.originalRequest = reflectee.path;
+            return instanceMirror.invoke(declaration.simpleName, [request]).reflectee;
           }
 
           if (reflectee is Get) {
@@ -90,7 +111,7 @@ class Router {
             print(apiDescriptionContent);
 
             addRoute(HttpMethods.GET, reflectee.path, handler);
-            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.GET), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
 
             // Burada summary ve description'ı kullanabilirsiniz
           } else if (reflectee is Post) {
@@ -101,7 +122,7 @@ class Router {
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
 
             addRoute(HttpMethods.POST, reflectee.path, handler);
-            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.POST), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
           } else if (reflectee is Put) {
             // Erişim ve route ekleme
             InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
@@ -110,7 +131,7 @@ class Router {
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
 
             addRoute(HttpMethods.PUT, reflectee.path, handler);
-            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.PUT), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
           } else if (reflectee is Delete) {
             // Erişim ve route ekleme
             InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
@@ -119,19 +140,21 @@ class Router {
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
 
             addRoute(HttpMethods.DELETE, reflectee.path, handler);
-            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.DELETE), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
           }
         }
       }
     }
-
+    swaggerSetting.forEach((key, value) {
+      print("key: ${key.path} ${key.method} value: ${value.summary} ${value.description}");
+    });
     SwaggerOptions.createSwaggerJsonFile(this);
   }
 }
 
 class _RouteHandler {
   final String path;
-  final Function(HttpRequest, [Map<String, String>?]) function;
+  final Function(HttpRequest) function;
 
   _RouteHandler(this.path, this.function);
 }

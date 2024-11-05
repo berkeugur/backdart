@@ -48,15 +48,24 @@ class SwaggerOptions {
           ///Get base path like original path is /user/:id/:name, basePath is user
           final basePath = path.split("/")[1];
           final pathParams = path.split("/").where((element) => element.startsWith("{"));
-          print("handler: ${handler.runtimeType}");
+
+          final swaggerSetting = router.swaggerSetting.entries
+              .where(
+                (element) {
+                  return element.key.path == path && element.key.method == key;
+                },
+              )
+              .first
+              .value;
+
           swaggerModel.paths[path] = {
             ...?swaggerModel.paths[path],
             key.name.toLowerCase(): EndpointModel(
               security: [],
               produces: [Produce.APPLICATION_JSON],
               consumes: ["multipart/form-data"],
-              summary: router.swaggerSetting[path]?.summary ?? "",
-              description: router.swaggerSetting[path]?.description ?? "",
+              summary: swaggerSetting.summary ?? "",
+              description: swaggerSetting.description ?? "",
               operationId: "",
               tags: [
                 basePath,
@@ -69,7 +78,7 @@ class SwaggerOptions {
                       parameterIn: "path",
                       required: true,
                       type: "string",
-                      description: router.swaggerSetting[path]?.description,
+                      description: swaggerSetting.description,
                     );
                   },
                 )
