@@ -5,6 +5,7 @@ import 'package:backdart/annotations.dart';
 class UserController extends Controller {
   @Get('/hello')
   @ApiSummary("Hello World Summary")
+  @ApiDescription("Hello World Description")
   HttpResponse getHello(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
@@ -14,6 +15,7 @@ class UserController extends Controller {
   }
 
   @Get('/user/:id')
+  @ApiSummary("User bilgilerini getirmek için endpoint")
   HttpResponse getUserById(HttpRequest request, Map<String, String> params) {
     request.response
       ..statusCode = HttpStatus.ok
@@ -51,6 +53,16 @@ class UserController extends Controller {
 
   @Get('/user')
   HttpResponse posUserById(HttpRequest request, Map<String, String> params) {
+    request.response
+      ..statusCode = HttpStatus.ok
+      ..write('merhaba dünya ${params['id']}')
+      ..close();
+    return request.response;
+  }
+
+  @Delete('/user')
+  @ApiSummary("silme- endpointisidr")
+  HttpResponse posUsdadsaserById(HttpRequest request, Map<String, String> params) {
     request.response
       ..statusCode = HttpStatus.ok
       ..write('merhaba dünya ${params['id']}')

@@ -8,6 +8,11 @@ import 'package:backdart/typedef.dart';
 
 class Router {
   final Routes _routes = {};
+  final Map<String, SwaggerSettings> swaggerSetting = {};
+
+  void addSwaggerSetting(String path, SwaggerSettings settings) {
+    swaggerSetting[convertPathParamsToSwaggerParams(path)] = settings;
+  }
 
   void addRoute(HttpMethods method, String path, RouteHandler handler) {
     _routes.putIfAbsent(method, () => {})[path] = handler;
@@ -72,32 +77,55 @@ class Router {
       if (declaration.metadata.isNotEmpty) {
         for (var metadata in declaration.metadata) {
           final reflectee = metadata.reflectee;
-          print("reflectees");
-          print(reflectee);
+          handler(HttpRequest request, [Map<String, String>? params]) {
+            return instanceMirror.invoke(declaration.simpleName, [request, if (params != null) params]).reflectee;
+          }
+
           if (reflectee is Get) {
-            handler(HttpRequest request, [Map<String, String>? params]) => instanceMirror.invoke(declaration.simpleName, [request, if (params != null) params]).reflectee;
+            // Erişim ve route ekleme
+            InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
+            InstanceMirror? apiDescription = declaration.metadata.firstWhere((m) => m.reflectee is ApiDescription, orElse: () => reflect(null));
+            final apiSummaryContent = (apiSummary.reflectee as ApiSummary?)?.summary;
+            final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
+            print(apiDescriptionContent);
+
             addRoute(HttpMethods.GET, reflectee.path, handler);
+            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+
+            // Burada summary ve description'ı kullanabilirsiniz
           } else if (reflectee is Post) {
-            handler(HttpRequest request, [Map<String, String>? params]) => instanceMirror.invoke(declaration.simpleName, [request, if (params != null) params]).reflectee;
+            // Erişim ve route ekleme
+            InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
+            InstanceMirror? apiDescription = declaration.metadata.firstWhere((m) => m.reflectee is ApiDescription, orElse: () => reflect(null));
+            final apiSummaryContent = (apiSummary.reflectee as ApiSummary?)?.summary;
+            final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
+
             addRoute(HttpMethods.POST, reflectee.path, handler);
+            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
           } else if (reflectee is Put) {
-            handler(HttpRequest request, [Map<String, String>? params]) => instanceMirror.invoke(declaration.simpleName, [request, if (params != null) params]).reflectee;
+            // Erişim ve route ekleme
+            InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
+            InstanceMirror? apiDescription = declaration.metadata.firstWhere((m) => m.reflectee is ApiDescription, orElse: () => reflect(null));
+            final apiSummaryContent = (apiSummary.reflectee as ApiSummary?)?.summary;
+            final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
+
             addRoute(HttpMethods.PUT, reflectee.path, handler);
+            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
           } else if (reflectee is Delete) {
-            handler(HttpRequest request, [Map<String, String>? params]) => instanceMirror.invoke(declaration.simpleName, [request, if (params != null) params]).reflectee;
+            // Erişim ve route ekleme
+            InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
+            InstanceMirror? apiDescription = declaration.metadata.firstWhere((m) => m.reflectee is ApiDescription, orElse: () => reflect(null));
+            final apiSummaryContent = (apiSummary.reflectee as ApiSummary?)?.summary;
+            final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
+
             addRoute(HttpMethods.DELETE, reflectee.path, handler);
-          } else if (reflectee is ApiSummary) {
-            print("ApiSummary");
-            print(reflectee.summary);
-          } else if (reflectee is ApiDescription) {
-            print("ApiDescription");
-            print(reflectee.description);
+            addSwaggerSetting(reflectee.path, SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
           }
         }
       }
     }
 
-    SwaggerOptions.createSwaggerJsonFile(_routes);
+    SwaggerOptions.createSwaggerJsonFile(this);
   }
 }
 
