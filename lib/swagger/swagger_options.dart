@@ -9,17 +9,7 @@ import 'package:backdart/swagger/models/schemes.dart';
 import 'package:backdart/swagger/models/security_definations.dart';
 import 'package:backdart/swagger/models/swagger_model.dart';
 import 'package:backdart/swagger/swagger_schema.dart';
-
-class SwaggerSettings {
-  final String? summary;
-  final String? description;
-  final Type? bodyScheme;
-  SwaggerSettings({
-    required this.summary,
-    required this.description,
-    required this.bodyScheme,
-  });
-}
+import 'package:backdart/utils/convert_path_params_to_swagger_params.dart';
 
 class SwaggerOptions {
   static Set<Schemes> schemes = {
@@ -130,12 +120,4 @@ class SwaggerOptions {
     file.createSync();
     file.writeAsStringSync(jsonEncode(swaggerModel.toJson()));
   }
-}
-
-///user/:id/:name to /user/{id}/{name}
-String convertPathParamsToSwaggerParams(String path) {
-  // Regex ile ':' karakteriyle başlayan bölümleri '{parametre_adi}' formatına çevirir.
-  return path.replaceAllMapped(RegExp(r':(\w+)'), (match) {
-    return '{${match.group(1)}}';
-  });
 }

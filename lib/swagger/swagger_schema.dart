@@ -1,5 +1,7 @@
 import 'dart:mirrors';
 
+import 'package:backdart/annotations.dart';
+
 class User {
   final String? name;
   final int age;
@@ -46,6 +48,19 @@ Map<String, dynamic> _generateTypeSchema(Type type) {
     // For complex objects, call generateSwaggerSchema recursively
     return generateSwaggerSchema(type);
   }
+}
+
+Type? findTypeFromDeclaration(DeclarationMirror declaration) {
+  if (declaration is MethodMirror) {
+    var methodMirror = declaration;
+    var parameters = methodMirror.parameters;
+    for (var param in parameters) {
+      if (param.metadata.any((m) => m.reflectee is Body)) {
+        return param.type.reflectedType;
+      }
+    }
+  }
+  return null;
 }
 
 void main() {
