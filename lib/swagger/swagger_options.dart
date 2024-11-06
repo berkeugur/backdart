@@ -8,12 +8,17 @@ import 'package:backdart/swagger/models/external_docs_model.dart';
 import 'package:backdart/swagger/models/schemes.dart';
 import 'package:backdart/swagger/models/security_definations.dart';
 import 'package:backdart/swagger/models/swagger_model.dart';
+import 'package:backdart/swagger/swagger_schema.dart';
 
 class SwaggerSettings {
   final String? summary;
   final String? description;
-
-  SwaggerSettings({required this.summary, required this.description});
+  final Type? bodyScheme;
+  SwaggerSettings({
+    required this.summary,
+    required this.description,
+    required this.bodyScheme,
+  });
 }
 
 class SwaggerOptions {
@@ -49,6 +54,16 @@ class SwaggerOptions {
           final basePath = path.split("/")[1];
           final pathParams = path.split("/").where((element) => element.startsWith("{"));
 
+          final bodyScheme = router.swaggerSetting.entries
+              .where(
+                (element) {
+                  return element.key.path == path && element.key.method == key;
+                },
+              )
+              .first
+              .value
+              .bodyScheme;
+
           final swaggerSetting = router.swaggerSetting.entries
               .where(
                 (element) {
@@ -57,13 +72,23 @@ class SwaggerOptions {
               )
               .first
               .value;
+          if (bodyScheme != null) {
+            print("Swagger schema: ");
+            print(generateSwaggerSchema(bodyScheme));
+            final data = generateSwaggerSchema(bodyScheme);
+            swaggerModel.definitions.addAll(
+              {
+                bodyScheme.toString(): data,
+              },
+            );
+          }
 
           swaggerModel.paths[path] = {
             ...?swaggerModel.paths[path],
             key.name.toLowerCase(): EndpointModel(
               security: [],
               produces: [Produce.APPLICATION_JSON],
-              consumes: ["multipart/form-data"],
+              consumes: ["application/json"],
               summary: swaggerSetting.summary ?? "",
               description: swaggerSetting.description ?? "",
               operationId: "",
@@ -81,7 +106,19 @@ class SwaggerOptions {
                       description: swaggerSetting.description,
                     );
                   },
-                )
+                ),
+                ...bodyScheme != null
+                    ? [
+                        Parameter(
+                          name: "body",
+                          parameterIn: "body",
+                          required: true,
+                          schema: {"\$ref": "#/definitions/${bodyScheme.toString()}"},
+                          type: bodyScheme.toString(),
+                          description: swaggerSetting.description,
+                        ),
+                      ]
+                    : [],
               ],
               responses: {},
             ),

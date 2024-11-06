@@ -2,6 +2,7 @@ import 'dart:mirrors';
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
+import 'package:backdart/extensions/body_extension.dart';
 import 'package:backdart/extensions/param_extension.dart';
 import 'package:backdart/http_methods.dart';
 import 'package:backdart/swagger/swagger_options.dart';
@@ -94,10 +95,52 @@ class Router {
     final classMirror = instanceMirror.type;
 
     for (var declaration in classMirror.declarations.values) {
+      Map<String, Object> bodyParams = {};
+      Type? bodyScheme = null;
+
+      if (declaration is MethodMirror) {
+        var methodMirror = declaration;
+        var parameters = methodMirror.parameters;
+        for (var param in parameters) {
+          if (param.metadata.any((m) => m.reflectee is Body)) {
+            final key = ((param.metadata.firstWhere((m) => m.reflectee is Body)).reflectee as Body).key;
+            print("Body key $key ${param.type.reflectedType}");
+            bodyScheme = param.type.reflectedType;
+            if (key != null) {
+              bodyParams.addAll({key: param.type.reflectedType});
+            } else {
+              print("Body key null ama var bişeyler");
+              // Access constructors if param.type is a ClassMirror
+              if (param.type is ClassMirror) {
+                var classMirror = param.type as ClassMirror;
+
+                // Iterate over constructors
+                classMirror.declarations.forEach((symbol, declaration) {
+                  if (declaration is MethodMirror && declaration.isConstructor) {
+                    print('Constructor found: ${declaration.simpleName}');
+
+                    // Get constructor parameters
+                    for (var ctorParam in declaration.parameters) {
+                      print("++++++++++++++++++++");
+                      var paramName = MirrorSystem.getName(ctorParam.simpleName);
+                      var paramType = (ctorParam.type.reflectedType);
+                      bodyParams.addAll({paramName: paramType});
+                      print(bodyParams);
+                    }
+                  }
+                });
+              }
+            }
+            print('Body parameter found: ${param.type} ${param.simpleName} ');
+          }
+        }
+      }
+
       if (declaration.metadata.isNotEmpty) {
         for (var metadata in declaration.metadata) {
           final reflectee = metadata.reflectee;
           handler(HttpRequest request) {
+            request.setBody({"name": "ali", "surname": "veli"});
             request.originalRequest = reflectee.path;
             return instanceMirror.invoke(declaration.simpleName, [request]).reflectee;
           }
@@ -111,7 +154,13 @@ class Router {
             print(apiDescriptionContent);
 
             addRoute(HttpMethods.GET, reflectee.path, handler);
-            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.GET), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(
+                PathWithMethod(reflectee.path, HttpMethods.GET),
+                SwaggerSettings(
+                  summary: apiSummaryContent,
+                  description: apiDescriptionContent,
+                  bodyScheme: bodyScheme,
+                ));
 
             // Burada summary ve description'ı kullanabilirsiniz
           } else if (reflectee is Post) {
@@ -122,7 +171,13 @@ class Router {
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
 
             addRoute(HttpMethods.POST, reflectee.path, handler);
-            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.POST), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(
+                PathWithMethod(reflectee.path, HttpMethods.POST),
+                SwaggerSettings(
+                  summary: apiSummaryContent,
+                  description: apiDescriptionContent,
+                  bodyScheme: bodyScheme,
+                ));
           } else if (reflectee is Put) {
             // Erişim ve route ekleme
             InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
@@ -131,7 +186,13 @@ class Router {
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
 
             addRoute(HttpMethods.PUT, reflectee.path, handler);
-            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.PUT), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(
+                PathWithMethod(reflectee.path, HttpMethods.PUT),
+                SwaggerSettings(
+                  summary: apiSummaryContent,
+                  description: apiDescriptionContent,
+                  bodyScheme: bodyScheme,
+                ));
           } else if (reflectee is Delete) {
             // Erişim ve route ekleme
             InstanceMirror? apiSummary = declaration.metadata.firstWhere((m) => m.reflectee is ApiSummary, orElse: () => reflect(null));
@@ -140,7 +201,13 @@ class Router {
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
 
             addRoute(HttpMethods.DELETE, reflectee.path, handler);
-            addSwaggerSetting(PathWithMethod(reflectee.path, HttpMethods.DELETE), SwaggerSettings(summary: apiSummaryContent, description: apiDescriptionContent));
+            addSwaggerSetting(
+                PathWithMethod(reflectee.path, HttpMethods.DELETE),
+                SwaggerSettings(
+                  summary: apiSummaryContent,
+                  description: apiDescriptionContent,
+                  bodyScheme: bodyScheme,
+                ));
           }
         }
       }

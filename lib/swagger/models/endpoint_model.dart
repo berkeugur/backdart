@@ -88,7 +88,7 @@ class Parameter {
   final bool required;
   final String? type;
   final String? format;
-  final ItemsClass? schema;
+  final Map<String, dynamic>? schema;
   final Items? items;
   final String? collectionFormat;
 
@@ -111,7 +111,7 @@ class Parameter {
     bool? required,
     String? type,
     String? format,
-    ItemsClass? schema,
+    Map<String, dynamic>? schema,
     Items? items,
     String? collectionFormat,
   }) =>
@@ -138,7 +138,7 @@ class Parameter {
         required: json["required"],
         type: json["type"],
         format: json["format"],
-        schema: json["schema"] == null ? null : ItemsClass.fromJson(json["schema"]),
+        schema: json["schema"] == null ? null : (json["schema"]),
         items: json["items"] == null ? null : Items.fromJson(json["items"]),
         collectionFormat: json["collectionFormat"],
       );
@@ -151,7 +151,7 @@ class Parameter {
       "required": required,
       "type": type,
       "format": format,
-      "schema": schema?.toJson(),
+      "schema": schema,
       "items": items?.toJson(),
       "collectionFormat": collectionFormat,
     };

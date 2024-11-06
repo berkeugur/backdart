@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
 import 'package:backdart/extensions/param_extension.dart';
+import './user.create.dto.dart';
 
 class UserController extends Controller {
   @Get('/hello')
@@ -44,7 +45,10 @@ class UserController extends Controller {
   }
 
   @Post('/user')
-  HttpResponse postUserById(HttpRequest request) {
+  HttpResponse postUserById(
+    HttpRequest request,
+    @Body() UserCreateDto body,
+  ) {
     request.response
       ..statusCode = HttpStatus.ok
       ..write('merhaba dünya ${request.params['id']}')

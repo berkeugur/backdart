@@ -18,7 +18,7 @@ class SwaggerModel {
   final List<Schemes> schemes;
   final Paths paths;
   final SecurityDefinitions securityDefinitions;
-  final Definitions definitions;
+  final Map<String, dynamic> definitions;
   final ExternalDocs externalDocs;
 
   SwaggerModel({
@@ -82,11 +82,7 @@ class SwaggerModel {
           },
         ),
         securityDefinitions: SecurityDefinitions.fromJson(json["securityDefinitions"]),
-        definitions: (json["definations"] as Map<String, dynamic>).map(
-          (key, value) {
-            return MapEntry(key, DefinationOptions.fromJson(value));
-          },
-        ),
+        definitions: (json["definations"] as Map<String, dynamic>),
         externalDocs: ExternalDocs.fromJson(json["externalDocs"]),
       );
 
@@ -103,11 +99,7 @@ class SwaggerModel {
           },
         ),
         "securityDefinitions": securityDefinitions.toJson(),
-        "definitions": definitions.map(
-          (key, value) {
-            return MapEntry(key, value.toJson());
-          },
-        ),
+        "definitions": definitions,
         "externalDocs": externalDocs.toJson(),
       };
 }

@@ -6,4 +6,9 @@ extension BodyExtension on HttpRequest {
   Map<String, dynamic> get body {
     return _body;
   }
+
+  void setBody(Map<String, dynamic> body) {
+    body.clear();
+    _body.addAll(body);
+  }
 }
