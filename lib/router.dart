@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:mirrors';
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
 import 'package:backdart/console_logs.dart';
+import 'package:backdart/core/app_response.dart';
 import 'package:backdart/extensions/param_extension.dart';
+import 'package:backdart/helpers/reflectee_helper.dart';
 import 'package:backdart/http_methods.dart';
 import 'package:backdart/models/path_with_method.dart';
 import 'package:backdart/swagger/models/swagger_settings.dart';
@@ -29,7 +32,6 @@ class Router {
   void handleRequest(HttpRequest request) {
     final method = request.method;
     final path = request.uri.path;
-
     final handler = _findHandler(HttpMethods.values.byName(method), path);
     if (handler != null) {
       final params = _extractParams(handler.path, path);
@@ -46,6 +48,9 @@ class Router {
     }
   }
 
+  /// Find the handler for the given method and path
+  /// If the handler is not found, return null
+  /// If the handler is found, return the handler
   _RouteHandler? _findHandler(HttpMethods method, String path) {
     final routes = _routes[method];
     if (routes == null) return null;
@@ -78,16 +83,35 @@ class Router {
   void registerController(Controller controller) {
     final instanceMirror = reflect(controller);
     final classMirror = instanceMirror.type;
-
     for (var declaration in classMirror.declarations.values) {
-      Type? bodyScheme = findTypeFromDeclaration(declaration);
-
       if (declaration.metadata.isNotEmpty) {
         for (var metadata in declaration.metadata) {
+          print(metadata.reflectee.runtimeType);
           final reflectee = metadata.reflectee;
+
+          Type? bodyScheme = ReflecteeHelper.reflecteeToBody(reflectee);
+          print("bodyScheme: $bodyScheme");
           handler(HttpRequest request) {
             request.originalRequest = reflectee.path;
-            return instanceMirror.invoke(declaration.simpleName, [request]).reflectee;
+            final ref = instanceMirror.invoke(declaration.simpleName, [request]).reflectee;
+            if (ref is AppJsonResponse) {
+              request.response
+                ..statusCode = HttpStatus.ok
+                ..headers.contentType = ContentType.json
+                ..write(jsonEncode(ref.json))
+                ..close();
+
+              return ref;
+            } else if (ref is AppTextResponse) {
+              request.response
+                ..headers.contentType = ContentType.text
+                ..write(ref.text)
+                ..close();
+              return ref;
+            } else {
+              print("ref is : ${ref.runtimeType}");
+            }
+            return ref;
           }
 
           if (reflecteeToHttpMethod(reflectee) != null) {
@@ -95,7 +119,9 @@ class Router {
             InstanceMirror? apiDescription = declaration.metadata.firstWhere((m) => m.reflectee is ApiDescription, orElse: () => reflect(null));
             final apiSummaryContent = (apiSummary.reflectee as ApiSummary?)?.summary;
             final apiDescriptionContent = (apiDescription.reflectee as ApiDescription?)?.description;
+            print("handler returned value ${classMirror} ${handler.runtimeType}");
             addRoute(reflecteeToHttpMethod(reflectee)!, reflectee.path, handler);
+            print("bodyScheme before adding swagger setting: $bodyScheme");
             addSwaggerSetting(
               PathWithMethod(reflectee.path, reflecteeToHttpMethod(reflectee)!),
               SwaggerSettings(

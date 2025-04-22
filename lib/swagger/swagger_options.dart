@@ -31,6 +31,10 @@ class SwaggerOptions {
       externalDocs: ExternalDocs(description: "", url: ""),
     );
 
+    print(router.swaggerSetting.map((key, value) {
+      print("Key: ${key.method} ${key.path}, Value: ${value.bodyScheme.runtimeType}");
+      return MapEntry(key, value.bodyScheme);
+    }));
     router.getRoutes().forEach(
       (key, value) {
         value.forEach((path, handler) {

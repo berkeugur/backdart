@@ -1,3 +1,5 @@
+import 'package:backdart/abstracts.dart';
+
 class Get {
   final String path;
 
@@ -35,5 +37,6 @@ class ApiDescription {
 }
 
 class Body {
-  const Body();
+  final Type body;
+  const Body(this.body);
 }

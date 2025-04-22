@@ -50,19 +50,6 @@ Map<String, dynamic> _generateTypeSchema(Type type) {
   }
 }
 
-Type? findTypeFromDeclaration(DeclarationMirror declaration) {
-  if (declaration is MethodMirror) {
-    var methodMirror = declaration;
-    var parameters = methodMirror.parameters;
-    for (var param in parameters) {
-      if (param.metadata.any((m) => m.reflectee is Body)) {
-        return param.type.reflectedType;
-      }
-    }
-  }
-  return null;
-}
-
 void main() {
   // Örnek olarak User sınıfını veriyoruz, `User` sınıfınızın tanımlı olduğunu varsayıyoruz
   var userSchema = generateSwaggerSchema(User);

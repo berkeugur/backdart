@@ -1,19 +1,37 @@
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
+import 'package:backdart/core/app_response.dart';
+import 'package:backdart/example/user/user_create_dto.dart';
 import 'package:backdart/extensions/param_extension.dart';
-import './user.create.dto.dart';
 
 class UserController extends Controller {
   @Get('/hello')
   @ApiSummary("Hello World Summary")
   @ApiDescription("Hello World Description")
-  HttpResponse getHello(HttpRequest request) {
-    request.response
-      ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya')
-      ..close();
-    return request.response;
+  Res getHello(HttpRequest request) {
+    return Res.json({
+      "hello": "world",
+      "satir2": "satir2 denemesi uzun ",
+    });
+  }
+
+  @Get('/hello/:id')
+  @ApiSummary("Hello World Summary")
+  @ApiDescription("Hello World Description")
+  Res getHello2(HttpRequest request) {
+    return Res.json({
+      "hello": "world",
+      "satir2": "satir2 denemesi uzun ",
+      "id": request.params['id'],
+    });
+  }
+
+  @Get('/hellotext')
+  @ApiSummary("Hello World Summary")
+  @ApiDescription("Hello World Description")
+  Res getHelloText(HttpRequest request) {
+    return Res.text("Text denemesi");
   }
 
   @Get('/user/:id')
@@ -30,7 +48,7 @@ class UserController extends Controller {
   HttpResponse getUsersById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${request.params['id']} ${request.params['name']}')
+      ..write('merhaba dünya id: ${request.params['id']} name:${request.params['name']} undefinedparameter: ${request.params['undefined']}')
       ..close();
     return request.response;
   }
@@ -45,27 +63,12 @@ class UserController extends Controller {
   }
 
   @Post('/user')
-  HttpResponse postUserById(
-    HttpRequest request,
-    @Body() UserCreateDto body,
-  ) {
-    request.response
-      ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${request.params['id']}')
-      ..close();
-    return request.response;
+  @Body(UserCreateDto)
+  Res postUserById(HttpRequest request) {
+    return Res.text("post denemesi");
   }
 
-  @Get('/user')
-  HttpResponse posUserById(HttpRequest request) {
-    request.response
-      ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya ${request.params['id']}')
-      ..close();
-    return request.response;
-  }
-
-  @Delete('/user')
+  /*  @Delete('/user')
   @ApiSummary("silme- endpointisidr")
   HttpResponse posUsdadsaserById(HttpRequest request) {
     request.response
@@ -73,5 +76,5 @@ class UserController extends Controller {
       ..write('merhaba dünya ${request.params['id']}')
       ..close();
     return request.response;
-  }
+  } */
 }

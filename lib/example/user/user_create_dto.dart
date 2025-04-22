@@ -1,6 +1,4 @@
-abstract class DTO {
-  Map<String, dynamic> toJson();
-}
+import 'package:backdart/abstracts.dart';
 
 class UserCreateDto extends DTO {
   final String name;
