@@ -48,7 +48,8 @@ class UserController extends Controller {
   HttpResponse getUsersById(HttpRequest request) {
     request.response
       ..statusCode = HttpStatus.ok
-      ..write('merhaba dünya id: ${request.params['id']} name:${request.params['name']} undefinedparameter: ${request.params['undefined']}')
+      ..write(
+          'merhaba dünya id: ${request.params['id']} name:${request.params['name']} undefinedparameter: ${request.params['undefined']}')
       ..close();
     return request.response;
   }
@@ -68,7 +69,7 @@ class UserController extends Controller {
     return Res.text("post denemesi");
   }
 
-  /*  @Delete('/user')
+  @Delete('/user')
   @ApiSummary("silme- endpointisidr")
   HttpResponse posUsdadsaserById(HttpRequest request) {
     request.response
@@ -76,5 +77,5 @@ class UserController extends Controller {
       ..write('merhaba dünya ${request.params['id']}')
       ..close();
     return request.response;
-  } */
+  }
 }
