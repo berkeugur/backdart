@@ -1,5 +1,5 @@
 ### Example main.dart
-'''
+```dart
 import 'package:backdart/app.dart';
 import 'package:backdart/swagger/models/schemes.dart';
 import 'package:backdart/swagger/swagger_options.dart';
@@ -15,11 +15,11 @@ void main() {
 
   app.listen(8080);
 }
-'''
+```
 
 
 ### Sample Controller 
-'''
+```dart
 import 'dart:io';
 import 'package:backdart/abstracts.dart';
 import 'package:backdart/annotations.dart';
@@ -100,11 +100,11 @@ class UserController extends Controller {
     return request.response;
   }
 }
-'''
+```
 
 
 ### Module
-'''
+```dart
 import 'package:backdart/abstracts.dart';
 import 'user_controller.dart';
 
@@ -112,11 +112,11 @@ class UserModule extends Module {
   @override
   List<Controller> get controllers => [UserController()];
 }
-'''
+```
 
 
 ### DTO
-'''
+```dart
 import 'package:backdart/abstracts.dart';
 
 class UserCreateDto extends DTO {
@@ -135,4 +135,4 @@ class UserCreateDto extends DTO {
     return {"name": name, "surname": surname};
   }
 }
-'''
+```
